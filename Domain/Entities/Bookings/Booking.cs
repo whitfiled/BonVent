@@ -17,13 +17,20 @@ internal class Booking : AuditableEntity, ISoftDelete, IAggregateRoot
     public DateOnly CheckOutDate { get; private set; }
     public decimal TotalPrice { get; private set; }
     public BookingStatus Status { get; private set; }
+    public Guid IdempotencyKey { get; private set; }
 
     public bool IsDeleted { get; set; }
     public DateTime? DeletedAtUtc { get; set; }
 
     private Booking() { }
 
-    public static Booking Create(Guid guestId, Room room, DateOnly checkIn, DateOnly checkOut, decimal nightlyRate)
+    public static Booking Create(
+        Guid guestId,
+        Room room,
+        DateOnly checkIn,
+        DateOnly checkOut,
+        decimal nightlyRate,
+        Guid idempotencyKey)
     {
         if (checkOut <= checkIn)
             throw new ArgumentException("Check-out must be after check-in.");
@@ -39,7 +46,8 @@ internal class Booking : AuditableEntity, ISoftDelete, IAggregateRoot
             CheckInDate = checkIn,
             CheckOutDate = checkOut,
             TotalPrice = nights * nightlyRate,
-            Status = BookingStatus.Pending
+            Status = BookingStatus.Pending,
+            IdempotencyKey = idempotencyKey
         };
     }
 

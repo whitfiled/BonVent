@@ -12,7 +12,6 @@ internal class RoomConfiguration : IEntityTypeConfiguration<Room>
         builder.Property(x => x.Id).ValueGeneratedNever();
         builder.Property(x => x.Number).IsRequired().HasMaxLength(50);
         builder.Property(x => x.Floor).IsRequired();
-        builder.Property(x => x.IsAvailable).IsRequired();
         builder.Property(x => x.RoomTypeId).IsRequired();
         // Configure the relationship with RoomType
         builder.HasOne(x => x.RoomType)

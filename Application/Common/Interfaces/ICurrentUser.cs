@@ -1,6 +1,8 @@
 namespace Application.Common.Interfaces;
 
-internal interface ICurrentUser
+public interface ICurrentUser
 {
-    string? UserId { get; }
+    Guid? UserId { get; }
+    Guid? GuestId { get; }
+    bool IsInRole(string role);
 }

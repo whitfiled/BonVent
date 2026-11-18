@@ -25,6 +25,7 @@ internal class BookingConfiguration : IEntityTypeConfiguration<Booking>
                .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasIndex(x => new { x.RoomId, x.CheckInDate, x.CheckOutDate });
+        builder.HasIndex(x => x.IdempotencyKey).IsUnique();
 
         builder.HasQueryFilter(x => !x.IsDeleted);
     }

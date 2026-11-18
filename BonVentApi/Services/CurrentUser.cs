@@ -3,7 +3,16 @@ using Application.Common.Interfaces;
 
 namespace BonVentApi.Services;
 
-internal sealed class CurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUser
+internal sealed class CurrentUser(IHttpContextAccessor accessor) : ICurrentUser
 {
-    public string? UserId => httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+    private ClaimsPrincipal? Principal => accessor.HttpContext?.User;
+
+    public Guid? UserId => ReadGuidClaim(ClaimTypes.NameIdentifier);
+    public Guid? GuestId => ReadGuidClaim("guest_id");
+    public bool IsInRole(string role) => Principal?.IsInRole(role) ?? false;
+
+    private Guid? ReadGuidClaim(string claimType)
+    {
+        return Guid.TryParse(Principal?.FindFirstValue(claimType), out var id) ? id : null;
+    }
 }

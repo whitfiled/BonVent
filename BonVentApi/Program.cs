@@ -1,32 +1,18 @@
-using Application.Bookings;
-using Application.Common.Interfaces;
-using BonVentApi.Services;
-using Infrastructure;
+using BonVentApi.Configuration.Extensions;
+using BonVentApi.Configuration.Middleware;
+using Infrastructure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<ICurrentUser, CurrentUser>();
-builder.Services.AddScoped<CreateBookingHandler>();
-builder.Services.AddInfrastructure();
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddApiServices(builder.Configuration);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseHttpPlane();
+
+using (var scope = app.Services.CreateScope())
 {
-    app.MapOpenApi();
+    await IdentitySeeder.SeedAsync(scope.ServiceProvider, app.Configuration);
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
 
 app.Run();

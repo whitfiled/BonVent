@@ -33,12 +33,12 @@ internal sealed class EntityChangesInterceptor(ICurrentUser currentUser) : SaveC
             if (entry.State == EntityState.Added)
             {
                 entry.Entity.CreatedAtUtc = now;
-                entry.Entity.CreatedBy = currentUser.UserId;
+                entry.Entity.CreatedBy = currentUser.UserId?.ToString();
             }
             else if (entry.State == EntityState.Modified)
             {
                 entry.Entity.UpdatedAtUtc = now;
-                entry.Entity.UpdatedBy = currentUser.UserId;
+                entry.Entity.UpdatedBy = currentUser.UserId?.ToString();
                 entry.Property(entity => entity.CreatedAtUtc).IsModified = false;
                 entry.Property(entity => entity.CreatedBy).IsModified = false;
             }
