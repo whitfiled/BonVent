@@ -11,6 +11,6 @@ internal class RoomTypeConfiguration : IEntityTypeConfiguration<RoomType>
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).ValueGeneratedNever();
         builder.Property(x => x.Name).IsRequired().HasMaxLength(100);
-        builder.Property(x => x.BaseRate).HasMaxLength(500).HasPrecision(18, 0);
+        builder.Property(x => x.BaseRate).HasPrecision(18, 2);
     }
 }

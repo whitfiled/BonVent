@@ -19,6 +19,11 @@ internal class RoomConfiguration : IEntityTypeConfiguration<Room>
                .HasForeignKey(x => x.RoomTypeId)
                .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasMany(x => x.Images)
+               .WithOne(x => x.Room)
+               .HasForeignKey(x => x.RoomId)
+               .OnDelete(DeleteBehavior.Cascade);
+
         builder.Property<byte[]>("RowVersion").IsRowVersion();
     }
 }

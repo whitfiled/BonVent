@@ -25,6 +25,8 @@ internal sealed class JwtTokenService(IOptions<JwtOptions> options) : IJwtTokenS
         };
 
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+        claims.AddRange(PermissionScopes.ForRoles(roles)
+            .Select(scope => new Claim("scope", scope)));
 
         if (user.GuestId is Guid guestId)
         {

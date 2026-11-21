@@ -6,28 +6,8 @@ using Domain.IRepositories;
 
 namespace Application.Bookings.Commands.CreateBooking;
 
-public sealed class CreateBookingHandler
+internal sealed class BookingHandler(IBookingRepository bookings, IRoomRepository rooms, IGuestRepository guests, IUnitOfWork unitOfWork, IBookingConcurrencyGuard concurrencyGuard)
 {
-    private readonly IBookingRepository _bookings;
-    private readonly IRoomRepository _rooms;
-    private readonly IGuestRepository _guests;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IBookingConcurrencyGuard _concurrencyGuard;
-
-    internal CreateBookingHandler(
-        IBookingRepository bookings,
-        IRoomRepository rooms,
-        IGuestRepository guests,
-        IUnitOfWork unitOfWork,
-        IBookingConcurrencyGuard concurrencyGuard)
-    {
-        _bookings = bookings;
-        _rooms = rooms;
-        _guests = guests;
-        _unitOfWork = unitOfWork;
-        _concurrencyGuard = concurrencyGuard;
-    }
-
     public async Task<BookingResponse> HandleAsync(CreateBookingCommand command, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(command);
@@ -37,12 +17,13 @@ public sealed class CreateBookingHandler
             throw new ArgumentException("An idempotency key is required.", nameof(command));
         }
 
-        await using var bookingLock = await _concurrencyGuard.AcquireAsync(
+        await using var bookingLock = await concurrencyGuard.AcquireAsync(
             command.RoomId,
             command.IdempotencyKey,
             cancellationToken);
 
-        var existing = await _bookings.GetByIdempotencyKeyAsync(command.IdempotencyKey, cancellationToken);
+        var existing = await bookings.GetByIdempotencyKeyAsync(command.IdempotencyKey, cancellationToken);
+
         if (existing is not null)
         {
             if (existing.GuestId != command.GuestId)
@@ -58,12 +39,11 @@ public sealed class CreateBookingHandler
             throw new ArgumentException("Check-in cannot be in the past.", nameof(command));
         }
 
-        var guest = await _guests.GetGuestAsync(command.GuestId, cancellationToken)
-            ?? throw new NotFoundException("Guest not found.");
-        var room = await _rooms.GetByIdWithTypeAsync(command.RoomId, cancellationToken)
-            ?? throw new NotFoundException("Room not found.");
+        var guest = await guests.GetGuestAsync(command.GuestId, cancellationToken) ?? throw new NotFoundException("Guest not found.");
 
-        if (await _bookings.HasOverlapAsync(command.RoomId, command.CheckIn, command.CheckOut, cancellationToken))
+        var room = await rooms.GetByIdWithTypeAsync(command.RoomId, cancellationToken) ?? throw new NotFoundException("Room not found.");
+
+        if (await bookings.HasOverlapAsync(command.RoomId, command.CheckIn, command.CheckOut, cancellationToken))
         {
             throw new ConflictException("Room is not available for those dates.");
         }
@@ -76,8 +56,8 @@ public sealed class CreateBookingHandler
             room.RoomType.BaseRate,
             command.IdempotencyKey);
 
-        await _bookings.AddAsync(booking, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await bookings.AddAsync(booking, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Map(booking, room.Number);
     }

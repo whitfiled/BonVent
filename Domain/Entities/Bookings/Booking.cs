@@ -24,13 +24,7 @@ internal class Booking : AuditableEntity, ISoftDelete, IAggregateRoot
 
     private Booking() { }
 
-    public static Booking Create(
-        Guid guestId,
-        Room room,
-        DateOnly checkIn,
-        DateOnly checkOut,
-        decimal nightlyRate,
-        Guid idempotencyKey)
+    public static Booking Create(Guid guestId, Room room, DateOnly checkIn, DateOnly checkOut, decimal nightlyRate, Guid idempotencyKey)
     {
         if (checkOut <= checkIn)
             throw new ArgumentException("Check-out must be after check-in.");

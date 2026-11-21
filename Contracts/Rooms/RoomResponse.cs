@@ -9,4 +9,5 @@ public record RoomResponse(
     string RoomTypeName,
     int Capacity,
     decimal BaseRate,
-    bool IsOutOfService);
+    bool IsOutOfService,
+    IReadOnlyList<RoomImageResponse> Images);

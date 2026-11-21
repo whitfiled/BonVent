@@ -10,6 +10,7 @@ internal class Room : AuditableEntity, IAggregateRoot
     public bool IsAvailable => !IsOutOfService;
     public Guid RoomTypeId { get; private set; }
     public RoomType RoomType { get; private set; } = default!;
+    public ICollection<RoomImage> Images { get; private set; } = new List<RoomImage>();
 
     private Room() { }
 

@@ -1,0 +1,9 @@
+@model Contracts.Bookings.BookingResponse
+@{
+    ViewData["Title"] = "Reservation received";
+}
+
+<h1>Reservation received</h1>
+<p>Your reservation request is pending confirmation.</p>
+<p>Reservation number: @Model.Id</p>
+<p>Room: @Model.RoomNumber</p>

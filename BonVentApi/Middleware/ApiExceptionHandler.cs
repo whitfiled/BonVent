@@ -11,14 +11,14 @@ internal sealed class ApiExceptionHandler : IExceptionHandler
         Exception exception,
         CancellationToken cancellationToken)
     {
-        var (statusCode, code) = exception switch
+        var (statusCode, code, message) = exception switch
         {
-            NotFoundException => (StatusCodes.Status404NotFound, "not_found"),
-            ConflictException => (StatusCodes.Status409Conflict, "conflict"),
-            UnauthorizedAccessException => (StatusCodes.Status401Unauthorized, "unauthorized"),
-            ArgumentException => (StatusCodes.Status400BadRequest, "invalid_request"),
-            InvalidOperationException => (StatusCodes.Status409Conflict, "invalid_operation"),
-            _ => (0, string.Empty)
+            NotFoundException => (StatusCodes.Status404NotFound, "not_found", "The requested resource was not found."),
+            ConflictException => (StatusCodes.Status409Conflict, "conflict", "The request conflicts with the current state."),
+            UnauthorizedAccessException => (StatusCodes.Status401Unauthorized, "unauthorized", "You are not authorized."),
+            ArgumentException => (StatusCodes.Status400BadRequest, "invalid_request", "The request is invalid."),
+            InvalidOperationException => (StatusCodes.Status409Conflict, "invalid_operation", "The operation cannot be completed."),
+            _ => (0, string.Empty, string.Empty)
         };
 
         if (statusCode == 0)
@@ -27,7 +27,7 @@ internal sealed class ApiExceptionHandler : IExceptionHandler
         }
 
         httpContext.Response.StatusCode = statusCode;
-        await httpContext.Response.WriteAsJsonAsync(new ErrorResponse(code, exception.Message), cancellationToken);
+        await httpContext.Response.WriteAsJsonAsync(new ErrorResponse(code, message), cancellationToken);
         return true;
     }
 }

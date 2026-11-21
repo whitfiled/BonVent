@@ -1,0 +1,22 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    </head>
+
+    <body>
+        <header>
+            <ul>
+                <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                <li><a asp-area="" asp-controller="Reservations" asp-action="Index">Reservations</a></li>
+            </ul>
+        </header>
+        <main>
+            @RenderBody()
+        </main>
+
+        <p>Hello</p>
+    </body>
+</html>

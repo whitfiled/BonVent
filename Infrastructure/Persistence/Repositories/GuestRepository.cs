@@ -37,4 +37,12 @@ internal class GuestRepository(HotelDbContext context) : IGuestRepository
             throw new Exception("An error occurred while retrieving the guest.", ex);
         }
     }
+
+    public Task<Guest?> GetByEmailAsync(string email, CancellationToken cancellationToken)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(email);
+        return context.Guests.SingleOrDefaultAsync(
+            guest => guest.Email == email,
+            cancellationToken);
+    }
 }

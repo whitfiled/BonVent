@@ -5,6 +5,7 @@ using Infrastructure.Persistence;
 using Infrastructure.Persistence.Context;
 using Infrastructure.Persistence.Interceptors;
 using Infrastructure.Persistence.Repositories;
+using Infrastructure.Storage;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -17,6 +18,7 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
+        services.Configure<BlobStorageOptions>(configuration.GetSection("BlobStorage"));
         services.AddIdentityCore<ApplicationUser>(options =>
         {
             options.Password.RequiredLength = 10;
@@ -44,6 +46,7 @@ public static class DependencyInjection
         services.AddScoped<IGuestRepository, GuestRepository>();
         services.AddScoped<IBookingRepository, BookingRepository>();
         services.AddScoped<IRoomRepository, RoomRepository>();
+        services.AddScoped<IRoomImageService, AzureBlobRoomImageService>();
 
         return services;
     }

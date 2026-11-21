@@ -1,8 +1,12 @@
 <Solution>
   <Project Path="Application/Application.csproj" Id="8ec34568-1613-4090-b3e8-c8d6b72c985d" />
   <Project Path="BonVentApi/BonVentApi.csproj" Id="427d082f-b03a-4152-8c83-82b720ca4605" />
+  <Project Path="BonVentDeskApp/BonVentDeskApp.csproj" Id="811ad6ca-4b3e-4529-9561-5d5b7cd003d8" />
   <Project Path="BonVentPublicSite/BonVentPublicSite.csproj" />
   <Project Path="Contracts/Contracts.csproj" Id="49ef5849-f708-479e-ba2a-0cf42f40414f" />
   <Project Path="Domain/Domain.csproj" />
   <Project Path="Infrastructure/Infrastructure.csproj" />
+  <Project Path="MobileBonVent/MobileBonVent.csproj" Id="66f6e24e-48e2-486a-8133-ebe4c1f95599">
+    <Deploy Solution="Debug|*" />
+  </Project>
 </Solution>
