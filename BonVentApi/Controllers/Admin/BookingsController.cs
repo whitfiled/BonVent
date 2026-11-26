@@ -22,9 +22,10 @@ internal sealed class BookingsController(BookingHandler handler) : AdminControll
 
     [HttpGet]
     [Authorize(Policy = PermissionScopes.ReservationsRead)]
-    public async Task<ActionResult<IReadOnlyList<BookingResponse>>> GetAll([FromServices] IReservationService reservations, CancellationToken cancellationToken)
+    public async Task<ActionResult<IReadOnlyList<BookingResponse>>> GetAll([FromQuery] int skip = 0, [FromQuery] int take = 50, [FromServices] IReservationService reservations = null!, CancellationToken cancellationToken = default)
     {
-        return Ok(await reservations.GetForStaffAsync(cancellationToken));
+        if (skip < 0 || take is < 1 or > 100) return BadRequest("take must be between 1 and 100.");
+        return Ok(await reservations.GetForStaffAsync(skip, take, cancellationToken));
     }
 
     [HttpDelete("{id:guid}")]
@@ -33,4 +34,24 @@ internal sealed class BookingsController(BookingHandler handler) : AdminControll
     {
         return Ok(await reservations.CancelAsync(id, null, cancellationToken));
     }
+
+    [HttpPost("{id:guid}/confirm")]
+    [Authorize(Policy = PermissionScopes.ReservationsWrite)]
+    public async Task<ActionResult<BookingResponse>> Confirm(Guid id, [FromServices] IReservationService reservations, CancellationToken cancellationToken) =>
+        Ok(await reservations.ConfirmAsync(id, cancellationToken));
+
+    [HttpPost("{id:guid}/reject")]
+    [Authorize(Policy = PermissionScopes.ReservationsWrite)]
+    public async Task<ActionResult<BookingResponse>> Reject(Guid id, [FromServices] IReservationService reservations, CancellationToken cancellationToken) =>
+        Ok(await reservations.RejectAsync(id, cancellationToken));
+
+    [HttpPost("{id:guid}/check-in")]
+    [Authorize(Policy = PermissionScopes.ReservationsWrite)]
+    public async Task<ActionResult<BookingResponse>> CheckIn(Guid id, [FromServices] IReservationService reservations, CancellationToken cancellationToken) =>
+        Ok(await reservations.CheckInAsync(id, cancellationToken));
+
+    [HttpPost("{id:guid}/check-out")]
+    [Authorize(Policy = PermissionScopes.ReservationsWrite)]
+    public async Task<ActionResult<BookingResponse>> CheckOut(Guid id, [FromServices] IReservationService reservations, CancellationToken cancellationToken) =>
+        Ok(await reservations.CheckOutAsync(id, cancellationToken));
 }

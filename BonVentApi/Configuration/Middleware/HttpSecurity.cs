@@ -12,7 +12,11 @@ public static class HttpSecurity
                 h["X-Content-Type-Options"] = "nosniff";
                 h["X-Frame-Options"] = "DENY";
                 h["Referrer-Policy"] = "no-referrer";
-                h["Cache-Control"] = "no-store";
+                if (!HttpMethods.IsGet(ctx.Request.Method)
+                    || ctx.User.Identity?.IsAuthenticated == true)
+                {
+                    h["Cache-Control"] = "no-store";
+                }
                 if (!app.Environment.IsDevelopment())
                     h["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'";
                 return Task.CompletedTask;

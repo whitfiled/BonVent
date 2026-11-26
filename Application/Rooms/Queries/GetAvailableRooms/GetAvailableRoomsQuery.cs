@@ -52,7 +52,7 @@ internal sealed class GetAvailableRoomsHandler(IRoomRepository rooms) : IGetAvai
                 room.Images.OrderBy(image => image.SortOrder)
                     .Select(image => new RoomImageResponse(
                         image.Id,
-                        $"/api/v1/rooms/{room.Id}/images/{image.Id}",
+                        image.SourceUrl ?? string.Empty,
                         image.AltText,
                         image.IsPrimary,
                         image.SortOrder))

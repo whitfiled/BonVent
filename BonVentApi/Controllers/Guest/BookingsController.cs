@@ -22,11 +22,12 @@ internal sealed class BookingsController(ICurrentUser currentUser, BookingHandle
     }
 
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<BookingResponse>>> GetMine([FromServices] IReservationService reservations, CancellationToken cancellationToken)
+    public async Task<ActionResult<IReadOnlyList<BookingResponse>>> GetMine([FromQuery] int skip = 0, [FromQuery] int take = 50, [FromServices] IReservationService reservations = null!, CancellationToken cancellationToken = default)
     {
         if (currentUser.GuestId is not Guid guestId) return Forbid();
 
-        return Ok(await reservations.GetForGuestAsync(guestId, cancellationToken));
+        if (skip < 0 || take is < 1 or > 100) return BadRequest("take must be between 1 and 100.");
+        return Ok(await reservations.GetForGuestAsync(guestId, skip, take, cancellationToken));
     }
 
     [HttpDelete("{id:guid}")]

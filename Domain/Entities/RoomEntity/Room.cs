@@ -23,4 +23,13 @@ internal class Room : AuditableEntity, IAggregateRoot
     }
 
     public void SetOutOfService(bool value) => IsOutOfService = value;
+
+    public void Update(string number, int floor, Guid roomTypeId)
+    {
+        if (string.IsNullOrWhiteSpace(number)) throw new ArgumentException("Room number is required.");
+        if (roomTypeId == Guid.Empty) throw new ArgumentException("Room type is required.");
+        Number = number.Trim();
+        Floor = floor;
+        RoomTypeId = roomTypeId;
+    }
 }

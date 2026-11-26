@@ -2,3 +2,4 @@
 
 [assembly: InternalsVisibleTo("Application")]
 [assembly: InternalsVisibleTo("Infrastructure")]
+[assembly: InternalsVisibleTo("BonVentApi.Tests")]

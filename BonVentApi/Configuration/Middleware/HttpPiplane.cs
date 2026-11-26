@@ -7,6 +7,7 @@ public static class HttpPiplane
     public static WebApplication UseHttpPlane(this WebApplication app)
     {
         app.UseExceptionHandler();
+        app.UseForwardedHeaders();
 
         if (!app.Environment.IsDevelopment())
         {
@@ -18,6 +19,7 @@ public static class HttpPiplane
 
         app.UseCors("Clients");
         app.UseRateLimiter();
+        app.UseOutputCache();
 
         app.UseAuthentication();
         app.UseAuthorization();

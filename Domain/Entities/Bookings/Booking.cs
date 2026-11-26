@@ -72,4 +72,11 @@ internal class Booking : AuditableEntity, ISoftDelete, IAggregateRoot
             throw new InvalidOperationException("Guest is not checked in.");
         Status = BookingStatus.CheckedOut;
     }
+
+    public void Reject()
+    {
+        if (Status != BookingStatus.Pending)
+            throw new InvalidOperationException("Only pending bookings can be rejected.");
+        Status = BookingStatus.Cancelled;
+    }
 }

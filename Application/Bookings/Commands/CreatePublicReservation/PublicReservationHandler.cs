@@ -30,24 +30,12 @@ internal sealed class PublicReservationHandler(IGuestRepository guests, BookingH
 
         if (guest is null)
         {
-            guest = new Guest(
-                request.FirstName.Trim(),
-                request.LastName.Trim(),
-                email,
-                request.Phone.Trim(),
-                request.Address.Trim());
+            guest = new Guest(request.FirstName.Trim(), request.LastName.Trim(), email, request.Phone.Trim(), request.Address.Trim());
 
             await guests.CreateGuestAsync(guest, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
-        return await bookings.HandleAsync(
-            new CreateBookingCommand(
-                guest.Id,
-                request.RoomId,
-                request.CheckIn,
-                request.CheckOut,
-                request.IdempotencyKey),
-            cancellationToken);
+        return await bookings.HandleAsync(new CreateBookingCommand(guest.Id, request.RoomId, request.CheckIn, request.CheckOut, request.IdempotencyKey), cancellationToken);
     }
 }

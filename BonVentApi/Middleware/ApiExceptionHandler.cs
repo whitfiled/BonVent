@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Diagnostics;
 
 namespace BonVentApi.Middleware;
 
-internal sealed class ApiExceptionHandler : IExceptionHandler
+internal sealed class ApiExceptionHandler(ILogger<ApiExceptionHandler> logger) : IExceptionHandler
 {
     public async ValueTask<bool> TryHandleAsync(
         HttpContext httpContext,
@@ -23,6 +23,7 @@ internal sealed class ApiExceptionHandler : IExceptionHandler
 
         if (statusCode == 0)
         {
+            logger.LogError(exception, "Unhandled API exception for {Method} {Path}", httpContext.Request.Method, httpContext.Request.Path);
             return false;
         }
 

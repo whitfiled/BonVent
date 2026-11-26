@@ -6,20 +6,24 @@ using Domain.IRepositories;
 
 namespace Application.Bookings;
 
-internal sealed class ReservationService(IBookingRepository bookings, IUnitOfWork unitOfWork) : IReservationService
+internal sealed class ReservationService(IBookingRepository bookings, IUnitOfWork unitOfWork, IAuditService audit, ICurrentUser currentUser) : IReservationService
 {
     public async Task<IReadOnlyList<BookingResponse>> GetForGuestAsync(
         Guid guestId,
+        int skip,
+        int take,
         CancellationToken cancellationToken)
     {
-        var results = await bookings.GetForGuestAsync(guestId, cancellationToken);
+        var results = await bookings.GetForGuestAsync(guestId, skip, take, cancellationToken);
         return results.Select(Map).ToArray();
     }
 
     public async Task<IReadOnlyList<BookingResponse>> GetForStaffAsync(
+        int skip,
+        int take,
         CancellationToken cancellationToken)
     {
-        var results = await bookings.GetAllAsync(cancellationToken);
+        var results = await bookings.GetAllAsync(skip, take, cancellationToken);
         return results.Select(Map).ToArray();
     }
 
@@ -38,6 +42,22 @@ internal sealed class ReservationService(IBookingRepository bookings, IUnitOfWor
 
         booking.Cancel();
         await unitOfWork.SaveChangesAsync(cancellationToken);
+        await audit.RecordAsync(currentUser.UserId, "booking.cancelled", "booking", booking.Id.ToString(), null, cancellationToken);
+        return Map(booking);
+    }
+
+    public Task<BookingResponse> ConfirmAsync(Guid bookingId, CancellationToken cancellationToken) => ChangeStatusAsync(bookingId, static booking => booking.Confirm(), cancellationToken);
+    public Task<BookingResponse> RejectAsync(Guid bookingId, CancellationToken cancellationToken) => ChangeStatusAsync(bookingId, static booking => booking.Reject(), cancellationToken);
+    public Task<BookingResponse> CheckInAsync(Guid bookingId, CancellationToken cancellationToken) => ChangeStatusAsync(bookingId, static booking => booking.CheckIn(), cancellationToken);
+    public Task<BookingResponse> CheckOutAsync(Guid bookingId, CancellationToken cancellationToken) => ChangeStatusAsync(bookingId, static booking => booking.CheckOut(), cancellationToken);
+
+    private async Task<BookingResponse> ChangeStatusAsync(Guid bookingId, Action<Booking> change, CancellationToken cancellationToken)
+    {
+        var booking = await bookings.GetByIdAsync(bookingId, cancellationToken)
+            ?? throw new NotFoundException("Reservation not found.");
+        change(booking);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await audit.RecordAsync(currentUser.UserId, $"booking.{booking.Status.ToString().ToLowerInvariant()}", "booking", booking.Id.ToString(), null, cancellationToken);
         return Map(booking);
     }
 

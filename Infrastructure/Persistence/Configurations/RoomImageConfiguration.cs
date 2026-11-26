@@ -12,6 +12,7 @@ internal sealed class RoomImageConfiguration : IEntityTypeConfiguration<RoomImag
         builder.Property(image => image.Id).ValueGeneratedNever();
         builder.Property(image => image.BlobName).IsRequired().HasMaxLength(500);
         builder.Property(image => image.ContentType).IsRequired().HasMaxLength(100);
+        builder.Property(image => image.SourceUrl).HasMaxLength(1000);
         builder.Property(image => image.AltText).HasMaxLength(250);
         builder.HasIndex(image => new { image.RoomId, image.SortOrder });
     }

@@ -22,6 +22,8 @@ internal sealed class BookingHandler(IBookingRepository bookings, IRoomRepositor
             command.IdempotencyKey,
             cancellationToken);
 
+        return await unitOfWork.ExecuteInSerializableTransactionAsync(async () =>
+        {
         var existing = await bookings.GetByIdempotencyKeyAsync(command.IdempotencyKey, cancellationToken);
 
         if (existing is not null)
@@ -60,6 +62,7 @@ internal sealed class BookingHandler(IBookingRepository bookings, IRoomRepositor
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Map(booking, room.Number);
+        }, cancellationToken);
     }
 
     private static BookingResponse Map(Booking booking, string roomNumber) => new(

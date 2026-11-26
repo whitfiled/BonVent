@@ -34,4 +34,5 @@ public sealed class RoomsController(IGetAvailableRooms handler, IRoomImageServic
         var image = await images.GetAsync(roomId, imageId, cancellationToken);
         return File(image.Content, image.ContentType);
     }
+
 }

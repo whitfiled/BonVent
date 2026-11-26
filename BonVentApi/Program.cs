@@ -1,6 +1,6 @@
 using BonVentApi.Configuration.Extensions;
 using BonVentApi.Configuration.Middleware;
-using Infrastructure.Identity;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,10 +10,11 @@ var app = builder.Build();
 
 app.UseHttpPlane();
 
-using (var scope = app.Services.CreateScope())
+app.MapHealthChecks("/health/live", new HealthCheckOptions
 {
-    await IdentitySeeder.SeedAsync(scope.ServiceProvider, app.Configuration);
-    await HotelDataSeeder.SeedRoomsAsync(scope.ServiceProvider, app.Configuration);
-}
+    Predicate = _ => false
+}).AllowAnonymous();
+
+app.MapHealthChecks("/health/ready").AllowAnonymous();
 
 app.Run();

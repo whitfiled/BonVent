@@ -20,4 +20,14 @@ internal class RoomType : Entity
         Capacity = capacity;
         BaseRate = baseRate;
     }
+
+    public void Update(string name, int capacity, decimal baseRate)
+    {
+        if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name is required.");
+        if (capacity <= 0) throw new ArgumentException("Capacity must be positive.");
+        if (baseRate < 0) throw new ArgumentException("Rate cannot be negative.");
+        Name = name.Trim();
+        Capacity = capacity;
+        BaseRate = baseRate;
+    }
 }

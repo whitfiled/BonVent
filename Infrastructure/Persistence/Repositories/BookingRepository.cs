@@ -36,24 +36,26 @@ internal sealed class BookingRepository(HotelDbContext context) : IBookingReposi
             .SingleOrDefaultAsync(booking => booking.Id == id, cancellationToken);
     }
 
-    public async Task<IReadOnlyList<Booking>> GetForGuestAsync(
-        Guid guestId,
-        CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<Booking>> GetForGuestAsync(Guid guestId, int skip, int take, CancellationToken cancellationToken)
     {
         return await context.Bookings
             .AsNoTracking()
             .Include(booking => booking.Room)
             .Where(booking => booking.GuestId == guestId)
             .OrderByDescending(booking => booking.CheckInDate)
+            .Skip(skip)
+            .Take(take)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyList<Booking>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<Booking>> GetAllAsync(int skip, int take, CancellationToken cancellationToken)
     {
         return await context.Bookings
             .AsNoTracking()
             .Include(booking => booking.Room)
             .OrderByDescending(booking => booking.CheckInDate)
+            .Skip(skip)
+            .Take(take)
             .ToListAsync(cancellationToken);
     }
 

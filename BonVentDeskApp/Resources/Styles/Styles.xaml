@@ -1,0 +1,312 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style TargetType="{x:Type Button}">
+        <Setter Property="Foreground"
+                Value="{StaticResource WhiteBrush}" />
+
+        <Setter Property="Background"
+                Value="{StaticResource PrimaryBrush}" />
+
+        <Setter Property="FontFamily"
+                Value="Open Sans" />
+
+        <Setter Property="FontSize"
+                Value="14" />
+
+        <Setter Property="FontWeight"
+                Value="SemiBold" />
+
+        <Setter Property="Padding"
+                Value="14,10" />
+
+        <Setter Property="MinHeight"
+                Value="44" />
+
+        <Setter Property="MinWidth"
+                Value="44" />
+
+        <Setter Property="BorderThickness"
+                Value="0" />
+
+        <Setter Property="Cursor"
+                Value="Hand" />
+
+        <Style.Triggers>
+            
+            <Trigger Property="IsMouseOver"
+                     Value="True">
+
+                <Setter Property="Background"
+                                        Value="{StaticResource NavyBrush}" />
+            </Trigger>
+
+            <Trigger Property="IsEnabled"
+                     Value="False">
+
+                <Setter Property="Foreground"
+                        Value="{StaticResource SurfaceDarkBrush}" />
+
+                <Setter Property="Background"
+                        Value="{StaticResource SecondaryBrush}" />
+
+                <Setter Property="Cursor"
+                        Value="Arrow" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- TextBlock: WPF equivalent of MAUI Label -->
+    <Style TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground"
+                Value="{StaticResource BlackBrush}" />
+
+        <Setter Property="FontFamily"
+                Value="Open Sans" />
+
+        <Setter Property="FontSize"
+                Value="14" />
+
+        <Setter Property="TextWrapping"
+                Value="Wrap" />
+    </Style>
+
+    <!-- Headline -->
+    <Style x:Key="Headline"
+           TargetType="{x:Type TextBlock}">
+
+        <Setter Property="Foreground"
+                Value="{StaticResource PrimaryBrush}" />
+
+        <Setter Property="FontSize"
+                Value="32" />
+
+        <Setter Property="FontWeight"
+                Value="Bold" />
+
+        <Setter Property="TextAlignment"
+                Value="Center" />
+
+        <Setter Property="HorizontalAlignment"
+                Value="Center" />
+    </Style>
+
+    <!-- SubHeadline -->
+    <Style x:Key="SubHeadline"
+           TargetType="{x:Type TextBlock}">
+
+        <Setter Property="Foreground"
+                Value="{StaticResource NavyBrush}" />
+
+        <Setter Property="FontSize"
+                Value="24" />
+
+        <Setter Property="FontWeight"
+                Value="SemiBold" />
+
+        <Setter Property="TextAlignment"
+                Value="Center" />
+
+        <Setter Property="HorizontalAlignment"
+                Value="Center" />
+    </Style>
+
+    <!-- TextBox: WPF equivalent of MAUI Entry and Editor -->
+    <Style TargetType="{x:Type TextBox}">
+        <Setter Property="Foreground"
+                Value="{StaticResource BlackBrush}" />
+
+        <Setter Property="Background"
+                Value="{StaticResource SurfaceBrush}" />
+
+        <Setter Property="BorderBrush"
+                Value="{StaticResource BorderBrush}" />
+
+        <Setter Property="BorderThickness"
+                Value="1" />
+
+        <Setter Property="FontFamily"
+                Value="Open Sans" />
+
+        <Setter Property="FontSize"
+                Value="14" />
+
+        <Setter Property="Padding"
+                Value="10,8" />
+
+        <Setter Property="MinHeight"
+                Value="44" />
+
+        <Setter Property="VerticalContentAlignment"
+                Value="Center" />
+
+        <Style.Triggers>
+            <Trigger Property="IsEnabled"
+                     Value="False">
+
+                <Setter Property="Foreground"
+                        Value="{StaticResource SecondaryBrush}" />
+
+                <Setter Property="Background"
+                        Value="{StaticResource SurfaceDarkBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- CheckBox -->
+    <Style TargetType="{x:Type CheckBox}">
+        <Setter Property="Foreground"
+                Value="{StaticResource BlackBrush}" />
+
+        <Setter Property="FontFamily"
+                Value="Open Sans" />
+
+        <Setter Property="FontSize"
+                Value="14" />
+
+        <Setter Property="MinHeight"
+                Value="44" />
+
+        <Setter Property="Margin"
+                Value="4" />
+    </Style>
+
+    <!-- RadioButton -->
+    <Style TargetType="{x:Type RadioButton}">
+        <Setter Property="Foreground"
+                Value="{StaticResource BlackBrush}" />
+
+        <Setter Property="FontFamily"
+                Value="Open Sans" />
+
+        <Setter Property="FontSize"
+                Value="14" />
+
+        <Setter Property="MinHeight"
+                Value="44" />
+
+        <Setter Property="Margin"
+                Value="4" />
+    </Style>
+
+    <!-- ComboBox: WPF equivalent of MAUI Picker -->
+    <Style TargetType="{x:Type ComboBox}">
+        <Setter Property="Foreground"
+                Value="{StaticResource BlackBrush}" />
+
+        <Setter Property="Background"
+                Value="{StaticResource SurfaceBrush}" />
+
+        <Setter Property="BorderBrush"
+                Value="{StaticResource BorderBrush}" />
+
+        <Setter Property="BorderThickness"
+                Value="1" />
+
+        <Setter Property="FontFamily"
+                Value="Open Sans" />
+
+        <Setter Property="FontSize"
+                Value="14" />
+
+        <Setter Property="MinHeight"
+                Value="44" />
+
+        <Setter Property="Padding"
+                Value="8,4" />
+    </Style>
+
+    <!-- DatePicker -->
+    <Style TargetType="{x:Type DatePicker}">
+        <Setter Property="Foreground"
+                Value="{StaticResource SecondaryBrush}" />
+
+        <Setter Property="Background"
+                Value="{StaticResource SurfaceBrush}" />
+
+        <Setter Property="BorderBrush"
+                Value="{StaticResource BorderBrush}" />
+
+        <Setter Property="FontFamily"
+                Value="Open Sans" />
+
+        <Setter Property="FontSize"
+                Value="14" />
+
+        <Setter Property="MinHeight"
+                Value="44" />
+    </Style>
+
+    <!-- ProgressBar -->
+    <Style TargetType="{x:Type ProgressBar}">
+        <Setter Property="Foreground"
+                Value="{StaticResource PrimaryBrush}" />
+
+        <Setter Property="Background"
+                Value="{StaticResource SecondaryBrush}" />
+
+        <Setter Property="Height"
+                Value="8" />
+    </Style>
+
+    <!-- Slider -->
+    <Style TargetType="{x:Type Slider}">
+        <Setter Property="Foreground"
+                Value="{StaticResource PrimaryBrush}" />
+
+        <Setter Property="Background"
+                Value="{StaticResource SecondaryBrush}" />
+
+        <Setter Property="MinHeight"
+                Value="30" />
+    </Style>
+
+    <!-- ToggleButton: WPF equivalent of MAUI Switch -->
+    <Style TargetType="{x:Type ToggleButton}">
+        <Setter Property="Foreground"
+                Value="{StaticResource WhiteBrush}" />
+
+        <Setter Property="Background"
+                Value="{StaticResource PrimaryBrush}" />
+
+        <Setter Property="Padding"
+                Value="12,8" />
+
+        <Setter Property="MinHeight"
+                Value="44" />
+
+        <Setter Property="BorderThickness"
+                Value="0" />
+
+        <Style.Triggers>
+            <Trigger Property="IsChecked"
+                     Value="False">
+
+                <Setter Property="Background"
+                        Value="{StaticResource SecondaryBrush}" />
+            </Trigger>
+
+            <Trigger Property="IsEnabled"
+                     Value="False">
+
+                <Setter Property="Background"
+                        Value="{StaticResource SecondaryBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Border -->
+    <Style TargetType="{x:Type Border}">
+        <Setter Property="BorderBrush"
+                Value="{StaticResource BorderBrush}" />
+
+        <Setter Property="BorderThickness"
+                Value="1" />
+    </Style>
+
+    <!-- Image -->
+    <Style TargetType="{x:Type Image}">
+        <Setter Property="Stretch"
+                Value="Uniform" />
+    </Style>
+</ResourceDictionary>

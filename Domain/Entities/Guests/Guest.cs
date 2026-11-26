@@ -29,4 +29,21 @@ internal class Guest : Entity, ISoftDelete, IAggregateRoot
         Phone = phone;
         Address = address;
     }
+
+    public void Update(string firstName, string lastName, string email, string phone, string address)
+    {
+        if (string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(lastName) || string.IsNullOrWhiteSpace(email))
+            throw new ArgumentException("Guest name and email are required.");
+        FirstName = firstName.Trim();
+        LastName = lastName.Trim();
+        Email = email.Trim();
+        Phone = phone?.Trim() ?? string.Empty;
+        Address = address?.Trim() ?? string.Empty;
+    }
+
+    public void Deactivate()
+    {
+        IsDeleted = true;
+        DeletedAtUtc = DateTime.UtcNow;
+    }
 }

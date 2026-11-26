@@ -13,4 +13,7 @@ public interface IRoomImageService
 
     Task<StoredRoomImage> GetAsync(Guid roomId, Guid imageId, CancellationToken cancellationToken);
 
+    Task DeleteAsync(Guid roomId, Guid imageId, CancellationToken cancellationToken);
+    Task SetPrimaryAsync(Guid roomId, Guid imageId, CancellationToken cancellationToken);
+
 }

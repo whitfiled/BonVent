@@ -7,6 +7,8 @@ using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.HttpOverrides;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.RateLimiting;
@@ -17,7 +19,7 @@ public static class ApiServiceExtension
 {
     public static IServiceCollection AddApiServices(this IServiceCollection services, IConfiguration configuration, WebApplicationBuilder builder)
     {
-        var GlobalCacheDurationSeconds = Math.Clamp(configuration.GetValue("GlobalCach:durationSecond", 300), 30, 3600);
+        var globalCacheDurationSeconds = Math.Clamp(configuration.GetValue("GlobalCache:DurationSeconds", 300), 30, 3600);
 
         services.AddControllers();
         services.AddEndpointsApiExplorer();
@@ -25,13 +27,18 @@ public static class ApiServiceExtension
 
 
         services.AddOutputCache(options => options.AddPolicy("RoomCatalogue", policy => policy
-            .Expire(TimeSpan.FromSeconds(GlobalCacheDurationSeconds))
-            .SetVaryByQuery("languageCode")));
+            .Expire(TimeSpan.FromSeconds(globalCacheDurationSeconds))
+            .SetVaryByQuery("CheckIn", "CheckOut", "Guests", "RoomTypeId")));
 
 
         services.AddApplication();
         services.AddInfrastructure(configuration);
         services.AddHttpContextAccessor();
+        services.Configure<ForwardedHeadersOptions>(options =>
+        {
+            options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            options.KnownProxies.Add(IPAddress.Loopback);
+        });
         services.AddScoped<ICurrentUser, CurrentUser>();
         services.AddExceptionHandler<ApiExceptionHandler>();
         services.AddProblemDetails();
@@ -80,6 +87,26 @@ public static class ApiServiceExtension
                     {
                         PermitLimit = 10,
                         Window = TimeSpan.FromMinutes(1),
+                        QueueLimit = 0
+                    }));
+
+            options.AddPolicy("Auth", context =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                    _ => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 20,
+                        Window = TimeSpan.FromMinutes(1),
+                        QueueLimit = 0
+                    }));
+
+            options.AddPolicy("Bootstrap", context =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                    _ => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 3,
+                        Window = TimeSpan.FromMinutes(10),
                         QueueLimit = 0
                     }));
         });

@@ -24,6 +24,5 @@ internal class RoomConfiguration : IEntityTypeConfiguration<Room>
                .HasForeignKey(x => x.RoomId)
                .OnDelete(DeleteBehavior.Cascade);
 
-        builder.Property<byte[]>("RowVersion").IsRowVersion();
     }
 }
