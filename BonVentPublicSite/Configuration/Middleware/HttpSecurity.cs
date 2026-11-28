@@ -13,8 +13,7 @@ public static class HttpSecurity
                 h["X-Frame-Options"] = "DENY";
                 h["Referrer-Policy"] = "no-referrer";
                 h["Cache-Control"] = "no-store";
-                if (!app.Environment.IsDevelopment())
-                    h["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'";
+                //h["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'";
                 return Task.CompletedTask;
             });
             await next();

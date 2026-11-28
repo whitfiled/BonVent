@@ -1,0 +1,34 @@
+@model BonVentPublicSite.Models.ReservationViewModel
+@{ ViewData["Title"] = "Make a reservation | Bon Vent"; }
+<section class="page-section container reservation-page">
+    <p class="eyebrow">Plan your stay</p><h1>Request a reservation</h1>
+    <p>Choose your dates and room, then enter your contact details. Your request is pending until the hotel confirms it.</p>
+    <form asp-action="Reservations" method="get" class="room-search-form">
+        <div class="form-group"><label for="searchCheckIn">Check-in</label><input id="searchCheckIn" name="checkIn" type="date" value="@Model.CheckIn.ToString("yyyy-MM-dd")" required /></div>
+        <div class="form-group"><label for="searchCheckOut">Check-out</label><input id="searchCheckOut" name="checkOut" type="date" value="@Model.CheckOut.ToString("yyyy-MM-dd")" required /></div>
+        <div class="form-group"><label for="searchGuests">Guests</label><input id="searchGuests" name="guests" type="number" min="1" max="20" value="@Model.Guests" required /></div>
+        <button type="submit" class="btn btn-outline-primary">Update available rooms</button>
+    </form>
+    <form asp-action="Reservations" method="post" class="reservation-form">
+        <div asp-validation-summary="All" class="validation-summary" role="alert"></div>
+        <input asp-for="CheckIn" type="hidden" value="@Model.CheckIn.ToString("yyyy-MM-dd")" /><input asp-for="CheckOut" type="hidden" value="@Model.CheckOut.ToString("yyyy-MM-dd")" /><input asp-for="Guests" type="hidden" /><input asp-for="IdempotencyKey" type="hidden" />
+        <div class="form-group">
+            <label asp-for="RoomId">Available room</label>
+            <select asp-for="RoomId" required>
+                <option value="">Select a room</option>
+                @foreach (var room in Model.AvailableRooms)
+                { <option value="@room.Id">Room @room.Number — @room.RoomTypeName, up to @room.Capacity guests, @room.BaseRate.ToString("N2") per night</option> }
+            </select><span asp-validation-for="RoomId" class="field-error"></span>
+        </div>
+        @if (Model.AvailableRooms.Count == 0 && ViewData.ModelState.IsValid)
+        { <p class="empty-state">No rooms are available for these dates. Try a different search above.</p> }
+        <div class="form-grid">
+            <div class="form-group"><label asp-for="FirstName">First name</label><input asp-for="FirstName" autocomplete="given-name" required /><span asp-validation-for="FirstName" class="field-error"></span></div>
+            <div class="form-group"><label asp-for="LastName">Last name</label><input asp-for="LastName" autocomplete="family-name" required /><span asp-validation-for="LastName" class="field-error"></span></div>
+            <div class="form-group"><label asp-for="Email">Email</label><input asp-for="Email" type="email" autocomplete="email" required /><span asp-validation-for="Email" class="field-error"></span></div>
+            <div class="form-group"><label asp-for="Phone">Phone</label><input asp-for="Phone" type="tel" autocomplete="tel" required /><span asp-validation-for="Phone" class="field-error"></span></div>
+            <div class="form-group form-wide"><label asp-for="Address">Address</label><input asp-for="Address" autocomplete="street-address" required /><span asp-validation-for="Address" class="field-error"></span></div>
+        </div>
+        <button type="submit" class="btn btn-primary" disabled="@(Model.AvailableRooms.Count == 0)">Submit reservation request</button>
+    </form>
+</section>

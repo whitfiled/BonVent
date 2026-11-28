@@ -1,0 +1,39 @@
+@model BonVentPublicSite.Models.HomeViewModel
+@{ ViewData["Title"] = "Our rooms | Bon Vent"; }
+<section class="page-section container">
+    <p class="eyebrow">Stay at Bon Vent</p><h1>Find your room</h1>
+    <p>Choose your dates to see the rooms available for your stay.</p>
+    <form asp-action="Index" method="get" class="room-search-form">
+        <div class="form-group"><label for="checkIn">Check-in</label><input id="checkIn" name="checkIn" type="date" value="@Model.CheckIn.ToString("yyyy-MM-dd")" required /></div>
+        <div class="form-group"><label for="checkOut">Check-out</label><input id="checkOut" name="checkOut" type="date" value="@Model.CheckOut.ToString("yyyy-MM-dd")" required /></div>
+        <div class="form-group"><label for="guests">Guests</label><input id="guests" name="guests" type="number" min="1" max="20" value="@Model.Guest" required /></div>
+        <button class="btn btn-primary" type="submit">Check availability</button>
+    </form>
+    <div asp-validation-summary="All" class="validation-summary" role="alert"></div>
+    @if (Model.Rooms.Count == 0 && ViewData.ModelState.IsValid)
+    { <p class="empty-state">No rooms are available for these dates. Please try another date or guest count.</p> }
+    else
+    {
+        <div class="room-grid">
+            @foreach (var room in Model.Rooms)
+            {
+                var image = room.Images.OrderByDescending(i => i.IsPrimary).ThenBy(i => i.SortOrder).FirstOrDefault();
+                <article class="room-card">
+                    <div class="room-card-image">
+                        @if (image is not null && !string.IsNullOrWhiteSpace(image.Url))
+                        { <img src="@image.Url" alt="@(image.AltText ?? $"Room {room.Number}")" loading="lazy" /> }
+                        else { <div class="room-image-placeholder">Bon Vent</div> }
+                    </div>
+                    <div class="room-card-body">
+                        <p class="eyebrow">@room.RoomTypeName</p><h2>Room @room.Number</h2>
+                        <p>Floor @room.Floor · Up to @room.Capacity guests</p><p><strong>@room.BaseRate.ToString("N2")</strong> per night</p>
+                        <div class="room-card-actions">
+                            <a class="btn btn-outline-primary" asp-action="Details" asp-route-id="@room.Id" asp-route-checkIn="@Model.CheckIn.ToString("yyyy-MM-dd")" asp-route-checkOut="@Model.CheckOut.ToString("yyyy-MM-dd")" asp-route-guests="@Model.Guest">View details</a>
+                            <a class="btn btn-primary" asp-action="Reservations" asp-route-roomId="@room.Id" asp-route-checkIn="@Model.CheckIn.ToString("yyyy-MM-dd")" asp-route-checkOut="@Model.CheckOut.ToString("yyyy-MM-dd")" asp-route-guests="@Model.Guest">Reserve</a>
+                        </div>
+                    </div>
+                </article>
+            }
+        </div>
+    }
+</section>

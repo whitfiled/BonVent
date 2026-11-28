@@ -1,0 +1,12 @@
+@model Contracts.Bookings.BookingResponse
+@{ ViewData["Title"] = "Reservation received | Bon Vent"; }
+<section class="page-section container confirmation-panel">
+    <p class="eyebrow">Thank you</p><h1>Reservation request received</h1>
+    <p>Your reservation is pending confirmation by the hotel.</p>
+    <dl>
+        <dt>Reservation number</dt><dd>@Model.Id</dd><dt>Room</dt><dd>@Model.RoomNumber</dd>
+        <dt>Check-in</dt><dd>@Model.CheckIn.ToString("dd MMM yyyy")</dd><dt>Check-out</dt><dd>@Model.CheckOut.ToString("dd MMM yyyy")</dd>
+        <dt>Stay</dt><dd>@Model.Nights night(s)</dd><dt>Estimated total</dt><dd>@Model.TotalPrice.ToString("N2")</dd>
+    </dl>
+    <a class="btn btn-primary" asp-controller="Home" asp-action="Index">Return home</a>
+</section>

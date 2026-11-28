@@ -8,6 +8,7 @@ public sealed record GetAvailableRoomsQuery(DateOnly CheckIn, DateOnly CheckOut,
 public interface IGetAvailableRooms
 {
     Task<IReadOnlyList<RoomResponse>> HandleAsync(GetAvailableRoomsQuery query, CancellationToken cancellationToken);
+    Task<RoomResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 }
 
 internal sealed class GetAvailableRoomsHandler(IRoomRepository rooms) : IGetAvailableRooms
@@ -40,7 +41,16 @@ internal sealed class GetAvailableRoomsHandler(IRoomRepository rooms) : IGetAvai
             query.RoomTypeId,
             cancellationToken);
 
-        return rooms.Select(room => new RoomResponse(
+        return rooms.Select(Map).ToArray();
+    }
+
+    public async Task<RoomResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var room = await _rooms.GetDetailsAsync(id, cancellationToken);
+        return room is null ? null : Map(room);
+    }
+
+    private static RoomResponse Map(Domain.Entities.RoomEntity.Room room) => new(
                 room.Id,
                 room.Number,
                 room.Floor,
@@ -52,11 +62,9 @@ internal sealed class GetAvailableRoomsHandler(IRoomRepository rooms) : IGetAvai
                 room.Images.OrderBy(image => image.SortOrder)
                     .Select(image => new RoomImageResponse(
                         image.Id,
-                        image.SourceUrl ?? string.Empty,
+                        image.SourceUrl ?? $"/api/v1/rooms/{room.Id}/images/{image.Id}",
                         image.AltText,
                         image.IsPrimary,
                         image.SortOrder))
-                    .ToArray()))
-            .ToArray();
-    }
+                    .ToArray());
 }

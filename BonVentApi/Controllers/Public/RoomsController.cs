@@ -11,7 +11,6 @@ namespace BonVentApi.Controllers.Public;
 [AllowAnonymous]
 [Route("api/v1/[controller]")]
 [Tags("Rooms (Public)")]
-[OutputCache(PolicyName = "RoomCatalogue")]
 public sealed class RoomsController(IGetAvailableRooms handler, IRoomImageService images) : ControllerBase
 {
     [HttpGet("available")]
@@ -28,7 +27,16 @@ public sealed class RoomsController(IGetAvailableRooms handler, IRoomImageServic
         return Ok(rooms);
     }
 
+    [HttpGet("{roomId:guid}")]
+    [OutputCache(PolicyName = "RoomCatalogue")]
+    public async Task<ActionResult<RoomResponse>> GetById(Guid roomId, CancellationToken cancellationToken)
+    {
+        var room = await handler.GetByIdAsync(roomId, cancellationToken);
+        return room is null ? NotFound() : Ok(room);
+    }
+
     [HttpGet("{roomId:guid}/images/{imageId:guid}")]
+    [OutputCache(PolicyName = "RoomCatalogue")]
     public async Task<IActionResult> GetImage(Guid roomId, Guid imageId, CancellationToken cancellationToken)
     {
         var image = await images.GetAsync(roomId, imageId, cancellationToken);

@@ -1,0 +1,207 @@
+﻿@model BonVentPublicSite.Models.HomeViewModel
+
+@{
+    ViewData["Title"] = "Bon Vent Hotel";
+    var heroImages = Model.Rooms
+        .SelectMany(room => room.Images.OrderByDescending(image => image.IsPrimary)
+            .ThenBy(image => image.SortOrder)
+            .Select(image => new { Image = image, Room = room }))
+        .Where(item => !string.IsNullOrWhiteSpace(item.Image.Url))
+        .DistinctBy(item => item.Image.Url)
+        .ToArray();
+    var today = DateOnly.FromDateTime(DateTime.Today).ToString("yyyy-MM-dd");
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/public/home.css" asp-append-version="true" data-page-style />
+}
+
+<section class="hero-carousel" data-hero-carousel aria-label="Bon Vent room photographs">
+    @if (heroImages.Length > 0)
+    {
+        <div class="hero-carousel__stage" id="hero-slides">
+            @for (var i = 0; i < heroImages.Length; i++)
+            {
+                var item = heroImages[i];
+                <figure class="hero-carousel__slide" data-hero-slide hidden="@(i != 0)">
+                    <img src="@item.Image.Url" alt="@(item.Image.AltText ?? $"Room {item.Room.Number} at Bon Vent")" loading="@(i == 0 ? "eager" : "lazy")" />
+                    <figcaption class="hero-carousel__caption">Room @item.Room.Number · @item.Room.RoomTypeName</figcaption>
+                </figure>
+            }
+            @* From Uiverse.io by karthik092726122003 - https://uiverse.io/karthik092726122003/clever-crab-26
+               MIT License, Copyright (c) karthik092726122003 *@
+            <div class="hero-carousel__arrows">
+                <button class="hero-arrow hero-arrow--previous" type="button" data-hero-previous aria-label="Previous image" aria-controls="hero-slides" disabled="@(heroImages.Length < 2)">
+                    <span class="hero-arrow__box" aria-hidden="true">
+                        <span class="hero-arrow__element"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="black" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" /></svg></span>
+                        <span class="hero-arrow__element"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="black" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" /></svg></span>
+                    </span>
+                </button>
+                <button class="hero-arrow hero-arrow--next" type="button" data-hero-next aria-label="Next image" aria-controls="hero-slides" disabled="@(heroImages.Length < 2)">
+                    <span class="hero-arrow__box" aria-hidden="true">
+                        <span class="hero-arrow__element"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="black" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" /></svg></span>
+                        <span class="hero-arrow__element"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="black" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" /></svg></span>
+                    </span>
+                </button>
+            </div>
+        </div>
+        <noscript><style>.hero-carousel__arrows { display: none; }</style></noscript>
+    }
+    else
+    {
+        <div class="hero-carousel__stage hero-carousel__stage--empty" aria-hidden="true"></div>
+    }
+
+    <div class="hero_content" id="availability">
+        <div class="hero_intro">
+
+            <div class="hero_subtle">
+                <p class="welcome_title">Welcome to Bon Vent</p>
+                <h1>Find your room</h1>
+                <p class="hero-description">Choose your dates and discover available rooms.</p>
+            </div>
+            @if (heroImages.Length > 0)
+            {
+                <span class="hero-carousel__counter" data-hero-counter aria-live="polite">01 / @heroImages.Length.ToString("D2")</span>
+            }
+        </div>
+        <form asp-controller="Home"
+              asp-action="Index"
+              method="get"
+              class="room-search-form hero-search">
+
+            <div class="hero-search__field">
+                <label for="checkIn">Check-in</label>
+                <input id="checkIn" name="checkIn" type="date" value="@Model.CheckIn.ToString("yyyy-MM-dd")" min="@today" required class="input"/>
+            </div>
+
+            <div class="hero-search__field">
+                <label for="checkOut">Check-out</label>
+                <input id="checkOut"
+                       name="checkOut"
+                       type="date"
+                       value="@Model.CheckOut.ToString("yyyy-MM-dd")"
+                       min="@today"
+                       required 
+                        class="input" />
+            </div>
+
+            <div class="hero-search__field">
+                <label for="guests">Guests</label>
+                <input id="guests"
+                       name="guest"
+                       type="number"
+                       min="1"
+                       value="@Model.Guest"
+                       required 
+                        class="input" />
+            </div>
+
+            <button type="submit" class="button">
+                Check availability
+            </button>
+        </form>
+        <div asp-validation-summary="All" class="hero-search__errors" role="alert"></div>
+    </div>
+</section>
+
+<section class="rooms-section">
+    <div class="container">
+        <div class="section-heading">
+            <p class="eyebrow">Our rooms</p>
+            <h2>Find the perfect room for your stay</h2>
+            <p>
+                Available rooms from
+                @Model.CheckIn.ToString("dd MMM yyyy")
+                to
+                @Model.CheckOut.ToString("dd MMM yyyy")
+            </p>
+        </div>
+
+        @if (!Model.Rooms.Any() && ViewData.ModelState.IsValid)
+        {
+            <div style="width: 400px; padding: 10px; border: 1px solid black">
+                <h3 style="text-align: center; background-color: red; color: white">No rooms are available</h3>
+                <p style="background-color: #333; color: white; text-align: center ">
+                    Please try different dates or contact the hotel
+                    for assistance.
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class="room-grid">
+                @foreach (var room in Model.Rooms)
+                {
+                    var image = room.Images
+                        .OrderByDescending(x => x.IsPrimary)
+                        .ThenBy(x => x.SortOrder)
+                        .FirstOrDefault();
+
+                    <article class="room-card">
+                        <div class="room-card-image">
+                            @if (image is not null &&
+                                 !string.IsNullOrWhiteSpace(image.Url))
+                            {
+                                <img src="@image.Url"
+                                     alt="@image.AltText"
+                                     loading="lazy" />
+                            }
+                            else
+                            {
+                                <div class="room-image-placeholder">
+                                    Bon Vent
+                                </div>
+                            }
+                        </div>
+
+                        <div class="room-card-body">
+                            <p class="room-category">
+                                @room.RoomTypeName
+                            </p>
+
+                            <h3>Room @room.Number</h3>
+
+                            <p>
+                                Comfortable accommodation on floor
+                                @room.Floor.
+                            </p>
+
+                            <div class="room-meta">
+                                <span>
+                                    Capacity: @room.Capacity guests
+                                </span>
+
+                                <span>
+                                    @room.BaseRate.ToString("N0") per night
+                                </span>
+                            </div>
+
+                            <div class="room-card-actions">
+                                <a class="btn btn-outline-primary"
+                                   asp-controller="Rooms"
+                                   asp-action="Details"
+                                   asp-route-id="@room.Id"
+                                   asp-route-checkIn="@Model.CheckIn.ToString("yyyy-MM-dd")"
+                                   asp-route-checkOut="@Model.CheckOut.ToString("yyyy-MM-dd")"
+                                   asp-route-guests="@Model.Guest">
+                                    View details
+                                </a>
+
+                                <a class="btn btn-primary"
+                                   asp-controller="Rooms"
+                                   asp-action="Reservations"
+                                   asp-route-roomId="@room.Id"
+                                   asp-route-checkIn="@Model.CheckIn.ToString("yyyy-MM-dd")"
+                                   asp-route-checkOut="@Model.CheckOut.ToString("yyyy-MM-dd")"
+                                   asp-route-guests="@Model.Guest">
+                                    Reserve
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </div>
+</section>

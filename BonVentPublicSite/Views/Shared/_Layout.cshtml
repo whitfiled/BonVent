@@ -3,22 +3,22 @@
     <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="~/css/site.css" rel="stylesheet" />
-    <link href="@RenderSectionAsync("Styles", required: false)" rel="stylesheet" />
+    <link href="~/css/variables/token.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/css/public/header.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/images/logo.svg" rel="icon" />
+    @await RenderSectionAsync("Styles", required: false)
     <title>@ViewData["Title"]</title>
     </head>
 
     <body>
-        <header>
-            <ul>
-                <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                <li><a asp-area="" asp-controller="Reservations" asp-action="Index">Reservations</a></li>
-            </ul>
-        </header>
-        <main>
+    @* <p style="padding: 5px; width: 100%; background-color: #e90000; color: white; text-align: center;">this site is under constructions, please don't enter any sansitive information</p> *@
+        <partial name="_Header" />
+        <main id="page-content" tabindex="-1">
             @RenderBody()
         </main>
-
-        <p>Hello</p>
+        <p id="availability-notice" class="availability-notice" role="status" hidden>Room availability may have changed. Check your dates again for the latest rooms.</p>
+        <script src="~/js/public/navigation.js" data-availability-url="@Url.Content("~/live/availability")" asp-append-version="true" defer></script>
+        <script src="~/js/public/hero-carousel.js" asp-append-version="true" defer></script>
     </body>
 </html>

@@ -5,6 +5,7 @@ public static class HttpPiplane
     public static WebApplication UsePublicSiteMiddlware(this WebApplication app)
     {
         app.UseHttpsRedirection();
+        app.UseWebSockets();
 
         app.UseStaticFiles();
         app.MapStaticAssets();
@@ -16,6 +17,9 @@ public static class HttpPiplane
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseAntiforgery();
+
+        app.Map("/live/availability", async context =>
+            await context.RequestServices.GetRequiredService<BonVentPublicSite.Services.Implementation.AvailabilityNotifications>().AcceptAsync(context));
 
         app.MapControllerRoute(
             name: "Areas",

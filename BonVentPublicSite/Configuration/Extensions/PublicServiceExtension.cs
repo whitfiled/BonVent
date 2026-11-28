@@ -8,6 +8,7 @@ public static class PublicServiceExtension
         services.AddRazorPages();
         services.AddAuthentication();
         services.AddAuthorization();
+        services.AddSingleton<BonVentPublicSite.Services.Implementation.AvailabilityNotifications>();
         services.AddExternalService(config);
 
 

@@ -33,6 +33,10 @@ internal sealed class RoomRepository(HotelDbContext context) : IRoomRepository
             .ToListAsync(cancellationToken);
     }
 
+    public Task<Room?> GetDetailsAsync(Guid id, CancellationToken cancellationToken) =>
+        context.Rooms.AsNoTracking().Include(room => room.RoomType).Include(room => room.Images)
+            .SingleOrDefaultAsync(room => room.Id == id, cancellationToken);
+
     public Task<Room?> GetByIdWithTypeAsync(Guid id, CancellationToken cancellationToken)
     {
         return context.Rooms

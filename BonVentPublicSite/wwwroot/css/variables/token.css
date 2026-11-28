@@ -15,7 +15,7 @@
     --primay: var(--palette-blue);
     --secondary: var(--palette-slate);
     --success: #24eb34;
-    --danger: #ff0000;
+    --danger: #e90000;
     --warning: #ffc107;
     --info: var(--palette-cyen);
     --light: var(--palett-white);

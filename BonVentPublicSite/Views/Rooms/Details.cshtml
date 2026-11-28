@@ -1,0 +1,30 @@
+@model BonVent.Contracts.Rooms.RoomResponse
+@{
+    ViewData["Title"] = $"Room {Model.Number} | Bon Vent";
+    var checkIn = ViewBag.CheckIn as DateOnly?;
+    var checkOut = ViewBag.CheckOut as DateOnly?;
+    var guests = ViewBag.Guests as int?;
+    var images = Model.Images.Where(i => !string.IsNullOrWhiteSpace(i.Url)).OrderByDescending(i => i.IsPrimary).ThenBy(i => i.SortOrder).ToArray();
+}
+<section class="page-section container">
+    <a asp-action="Index" asp-route-checkIn="@checkIn?.ToString("yyyy-MM-dd")" asp-route-checkOut="@checkOut?.ToString("yyyy-MM-dd")" asp-route-guests="@guests">← Back to rooms</a>
+    <div class="detail-layout">
+        <div>
+            @if (images.Length > 0)
+            { <div class="room-gallery">@foreach (var image in images) { <img src="@image.Url" alt="@(image.AltText ?? $"Room {Model.Number}")" loading="lazy" /> }</div> }
+            else { <div class="room-image-placeholder detail-placeholder">Bon Vent</div> }
+        </div>
+        <div class="detail-panel">
+            <p class="eyebrow">@Model.RoomTypeName</p><h1>Room @Model.Number</h1>
+            <p>Floor @Model.Floor · Up to @Model.Capacity guests</p>
+            <p class="room-price">@Model.BaseRate.ToString("N2") <span>per night</span></p>
+            @if (checkIn.HasValue && checkOut.HasValue)
+            { <p>Selected stay: @checkIn.Value.ToString("dd MMM yyyy") to @checkOut.Value.ToString("dd MMM yyyy")</p> }
+            @if (Model.IsOutOfService)
+            { <p class="empty-state">This room is currently out of service.</p> }
+            else
+            { <a class="btn btn-primary" asp-action="Reservations" asp-route-roomId="@Model.Id" asp-route-checkIn="@checkIn?.ToString("yyyy-MM-dd")" asp-route-checkOut="@checkOut?.ToString("yyyy-MM-dd")" asp-route-guests="@guests">Reserve this room</a> }
+            <p class="muted">Availability and the final reservation are confirmed when you submit your request.</p>
+        </div>
+    </div>
+</section>
